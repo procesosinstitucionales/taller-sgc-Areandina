@@ -1,0 +1,497 @@
+
+<style>
+  :root {
+    --verde: #7fb536;
+    --magenta: #e6007e;
+    --naranja: #F59C2F;
+    --verde-light: #eaf3de;
+    --magenta-light: #fbeaf0;
+    --naranja-light: #faeeda;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans, Arial, sans-serif); }
+  body { background: transparent; }
+  .dash { padding: 1.5rem 0; }
+  .dash-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--verde); }
+  .dash-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .dash-sub { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+  .pill { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; display: inline-block; }
+  .pill-verde { background: var(--verde-light); color: #3B6D11; }
+  .pill-magenta { background: var(--magenta-light); color: #a3005a; }
+  .pill-naranja { background: var(--naranja-light); color: #854F0B; }
+  .pill-gray { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.85rem 1rem; }
+  .metric-label { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .metric-val { font-size: 26px; font-weight: 500; }
+  .metric-val.verde { color: var(--verde); }
+  .metric-val.magenta { color: var(--magenta); }
+  .metric-val.naranja { color: var(--naranja); }
+  .metric-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 3px; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .tab { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); transition: all 0.15s; }
+  .tab.active { background: var(--verde); color: #fff; border-color: var(--verde); font-weight: 500; }
+  .tab:hover:not(.active) { background: var(--color-background-secondary); }
+
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 8px; }
+  .section-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .kpi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .kpi-table th { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .kpi-table td { padding: 9px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; }
+  .kpi-table tr:last-child td { border-bottom: none; }
+  .kpi-table tr:hover td { background: var(--color-background-secondary); }
+
+  .semaforo { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .sem-verde { background: var(--verde); }
+  .sem-amarillo { background: var(--naranja); }
+  .sem-rojo { background: var(--magenta); }
+
+  .tipo-tag { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+  .tipo-e { background: var(--magenta-light); color: #a3005a; }
+  .tipo-t { background: var(--naranja-light); color: #854F0B; }
+  .tipo-o { background: var(--verde-light); color: #3B6D11; }
+
+  .diagnostico-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .diag-card { border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1rem 1.1rem; background: var(--color-background-primary); }
+  .diag-icon { font-size: 18px; margin-bottom: 8px; }
+  .diag-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .diag-list { font-size: 12px; color: var(--color-text-secondary); line-height: 1.7; list-style: none; }
+  .diag-list li::before { content: "· "; }
+
+  .progress-bar { height: 5px; border-radius: 3px; background: var(--color-border-tertiary); margin-top: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; }
+
+  .rec-box { border-left: 3px solid var(--verde); padding: 0.85rem 1rem; background: var(--color-background-secondary); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; margin-bottom: 0.65rem; font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+
+  .viz-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; font-size: 12px; color: var(--color-text-secondary); }
+  .viz-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 10px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); font-size: 11px; }
+
+  .hidden { display: none; }
+
+  .trend-up { color: var(--verde); font-size: 14px; }
+  .trend-dn { color: var(--magenta); font-size: 14px; }
+  .trend-eq { color: var(--naranja); font-size: 14px; }
+
+  .badge-nc { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: var(--magenta-light); color: #a3005a; font-weight: 500; }
+  .badge-c { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: var(--verde-light); color: #3B6D11; font-weight: 500; }
+</style>
+
+<div class="dash">
+  <h2 class="sr-only">Dashboard analítico de indicadores SGC — Biblioteca Areandina. Propuesta de reformulación de 36 a 18 KPIs estratégicos con diagnóstico, categorías y recomendaciones.</h2>
+
+  <div class="dash-header">
+    <div style="width:36px;height:36px;border-radius:50%;background:var(--verde);display:flex;align-items:center;justify-content:center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <div>
+      <div class="dash-title">Sistema de Indicadores SGC — Biblioteca Areandina</div>
+      <div class="dash-sub">Diagnóstico crítico + propuesta reformulada · ISO 9001 · IES · Resultados 2025</div>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="metric-card">
+      <div class="metric-label">Indicadores actuales</div>
+      <div class="metric-val" style="color:var(--color-text-primary);">36</div>
+      <div class="metric-sub">Sistema base SGC</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Propuesta optimizada</div>
+      <div class="metric-val verde">18</div>
+      <div class="metric-sub">Reducción del 50%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Cumplen meta 2025</div>
+      <div class="metric-val verde">78%</div>
+      <div class="metric-sub">28 de 36 indicadores</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">No retadores (saturados)</div>
+      <div class="metric-val naranja">14</div>
+      <div class="metric-sub">Meta alcanzada al 100%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Sin impacto decisional</div>
+      <div class="metric-val magenta">8</div>
+      <div class="metric-sub">Solo reporte, sin acción</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabBar">
+    <div class="tab active" onclick="showTab('diagnostico')">Diagnóstico</div>
+    <div class="tab" onclick="showTab('kpis')">KPIs reformulados</div>
+    <div class="tab" onclick="showTab('visualizacion')">Visualización</div>
+    <div class="tab" onclick="showTab('mejora')">Mejora continua</div>
+    <div class="tab" onclick="showTab('recomendaciones')">Recomendaciones</div>
+  </div>
+
+  <div id="tab-diagnostico">
+    <div class="diagnostico-grid">
+      <div class="diag-card" style="border-top: 3px solid var(--magenta);">
+        <div class="diag-icon">🔴</div>
+        <div class="diag-title" style="color:var(--magenta);">Eliminar (9 indicadores)</div>
+        <ul class="diag-list">
+          <li>Período de prueba — siempre 100%, sin variación</li>
+          <li>Inducción al cargo — siempre 100%, rutinario</li>
+          <li>Mantenimiento preventivo equipos — 100%, sin riesgo</li>
+          <li>Respuesta gestión activos fijos — duplica otro KPI</li>
+          <li>Respuesta servicios apoyo — duplicado de mantenimiento</li>
+          <li>Actividades extensión cultural — meta trivial superada</li>
+          <li>Cumplimiento numerales normativos — meta "0 NC", ya lograda</li>
+          <li>Ajuste de perfil — operativo, sin valor estratégico</li>
+          <li>Satisfacción TI — falla de plataforma, no medible</li>
+        </ul>
+      </div>
+      <div class="diag-card" style="border-top: 3px solid var(--naranja);">
+        <div class="diag-icon">🟡</div>
+        <div class="diag-title" style="color:#854F0B;">Transformar (12 indicadores)</div>
+        <ul class="diag-list">
+          <li>Satisfacción usuario 99% → NPS o índice diferenciado</li>
+          <li>Uso material físico (caída) → tasa de uso por volumen</li>
+          <li>Uso material digital (caída masiva) → impacto por consulta</li>
+          <li>Formación de usuarios → % impacto en retención académica</li>
+          <li>DOFA cumplimiento → % estrategias con resultado medible</li>
+          <li>Rotación personal → índice de estabilidad de equipos</li>
+          <li>Chequera beneficios → índice clima laboral combinado</li>
+          <li>Bases de datos → cobertura programas vs. recursos disponibles</li>
+          <li>% EBITDA → % ejecución presupuestal de biblioteca</li>
+          <li>Formación equipo → horas de formación con impacto en servicio</li>
+          <li>Espacios bibliotecarios → ratio ocupación vs. capacidad</li>
+          <li>Extensión cultural → impacto académico de actividades</li>
+        </ul>
+      </div>
+      <div class="diag-card" style="border-top: 3px solid var(--verde);">
+        <div class="diag-icon">🟢</div>
+        <div class="diag-title" style="color:var(--verde);">Conservar y fortalecer (15)</div>
+        <ul class="diag-list">
+          <li>Satisfacción usuario — base irremplazable, reformular escala</li>
+          <li>Eficacia planes de acción — buen enfoque PHVA</li>
+          <li>Información documentada — relevante para ISO 9001</li>
+          <li>Disponibilidad tecnológica — crítico para servicio continuo</li>
+          <li>Casos soporte TI — con ANS claros</li>
+          <li>Cumplimiento compras — trazabilidad financiera</li>
+          <li>Mantenimiento correctivo — impacto directo en usuarios</li>
+          <li>Cobertura bienestar — clima organizacional</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <div class="section-dot" style="background:var(--verde)"></div>
+      Análisis de cumplimiento 2025 por categoría
+    </div>
+    <div style="margin-bottom: 1.5rem;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+        <div class="metric-card">
+          <div class="metric-label">Estratégico (6 KPIs)</div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 0 4px;">
+            <div class="semaforo sem-verde"></div>
+            <span style="font-size:13px;">5 cumplen / 1 no cumple</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:83%;background:var(--verde)"></div></div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:4px;">83% cumplimiento · Riesgo: saturación</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Misionales (9 KPIs)</div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 0 4px;">
+            <div class="semaforo sem-amarillo"></div>
+            <span style="font-size:13px;">5 cumplen / 4 no cumplen</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:56%;background:var(--naranja)"></div></div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:4px;">56% cumplimiento · Área crítica de mejora</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Apoyo / Talento Humano (10)</div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 0 4px;">
+            <div class="semaforo sem-amarillo"></div>
+            <span style="font-size:13px;">9 cumplen / 1 no cumple</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:90%;background:var(--naranja)"></div></div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:4px;">90% cumplimiento · Muchos saturados</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Infraestructura + TI (11)</div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 0 4px;">
+            <div class="semaforo sem-verde"></div>
+            <span style="font-size:13px;">10 cumplen / 1 no cumple</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:91%;background:var(--verde)"></div></div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:4px;">91% cumplimiento · Riesgo de medición vacía</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-kpis" class="hidden">
+    <div style="margin-bottom: 1rem; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <span style="font-size:12px;color:var(--color-text-secondary);">Filtrar por tipo:</span>
+      <span class="tipo-tag tipo-e" style="cursor:pointer;" onclick="filterKPI('E')">Estratégico</span>
+      <span class="tipo-tag tipo-t" style="cursor:pointer;" onclick="filterKPI('T')">Táctico</span>
+      <span class="tipo-tag tipo-o" style="cursor:pointer;" onclick="filterKPI('O')">Operativo</span>
+      <span class="tipo-tag" style="cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;" onclick="filterKPI('ALL')">Todos</span>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="kpi-table" id="kpiTable">
+        <thead>
+          <tr>
+            <th style="width:20px;">#</th>
+            <th>Categoría</th>
+            <th style="min-width:160px;">Nombre del indicador</th>
+            <th style="min-width:200px;">Fórmula</th>
+            <th>Frecuencia</th>
+            <th>Meta</th>
+            <th>Tipo</th>
+            <th>Semáforo</th>
+          </tr>
+        </thead>
+        <tbody id="kpiBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="tab-visualizacion" class="hidden">
+    <div style="margin-bottom:1.2rem;">
+      <div class="section-title"><div class="section-dot" style="background:var(--verde)"></div>Estructura de visualización por categoría</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px;margin-bottom:1.5rem;">
+      <div class="diag-card">
+        <div style="font-weight:500;font-size:13px;margin-bottom:8px;color:var(--magenta);">Usuarios y servicio</div>
+        <div class="viz-row">
+          <div class="viz-chip">📊 NPS mensual en tendencia</div>
+          <div class="viz-chip">🔴 Semáforo satisfacción</div>
+        </div>
+        <div class="viz-row" style="margin-top:6px;">
+          <div class="viz-chip">📈 Comparativo semestral formación</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;">KPIs: satisfacción NPS, tasa retención usuarios formados, ocupación espacios</div>
+      </div>
+      <div class="diag-card">
+        <div style="font-weight:500;font-size:13px;margin-bottom:8px;color:var(--verde);">Recursos de información</div>
+        <div class="viz-row">
+          <div class="viz-chip">📉 Tendencia uso digital vs. físico</div>
+        </div>
+        <div class="viz-row" style="margin-top:6px;">
+          <div class="viz-chip">🟡 Alerta cobertura programas</div>
+          <div class="viz-chip">🔵 Mapa calor accesos</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;">KPIs: ratio uso digital/total, cobertura bases de datos, consultas por estudiante activo</div>
+      </div>
+      <div class="diag-card">
+        <div style="font-weight:500;font-size:13px;margin-bottom:8px;color:var(--naranja);">Impacto académico</div>
+        <div class="viz-row">
+          <div class="viz-chip">📌 Indicador compuesto impacto</div>
+        </div>
+        <div class="viz-row" style="margin-top:6px;">
+          <div class="viz-chip">📋 Comparativo por sede</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;">KPIs: % programas con syllabus cubierto, citas repositorio, usuarios formados con seguimiento</div>
+      </div>
+      <div class="diag-card">
+        <div style="font-weight:500;font-size:13px;margin-bottom:8px;color:var(--verde);">Talento humano</div>
+        <div class="viz-row">
+          <div class="viz-chip">🔵 Índice estabilidad equipo</div>
+          <div class="viz-chip">🟢 Semáforo clima</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;">KPIs: índice clima laboral, formación con impacto medido, estabilidad por sede</div>
+      </div>
+      <div class="diag-card">
+        <div style="font-weight:500;font-size:13px;margin-bottom:8px;color:var(--magenta);">Calidad y mejora continua</div>
+        <div class="viz-row">
+          <div class="viz-chip">🔄 Gauge eficacia PHVA</div>
+          <div class="viz-chip">📄 Semáforo documental</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;">KPIs: eficacia planes acción, % cumplimiento documental, ciclos de mejora cerrados</div>
+      </div>
+      <div class="diag-card">
+        <div style="font-weight:500;font-size:13px;margin-bottom:8px;color:var(--naranja);">Infraestructura y TI</div>
+        <div class="viz-row">
+          <div class="viz-chip">⚡ Alerta disponibilidad 99%</div>
+        </div>
+        <div class="viz-row" style="margin-top:6px;">
+          <div class="viz-chip">📊 Tendencia ANS soporte</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;">KPIs: disponibilidad tecnológica, cumplimiento ANS soporte, ejecución presupuestal</div>
+      </div>
+    </div>
+
+    <div class="section-title"><div class="section-dot" style="background:var(--naranja)"></div>Lógica de semáforos sugerida</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:1.5rem;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--verde-light);border-radius:var(--border-radius-md);">
+        <div class="semaforo sem-verde"></div>
+        <div style="font-size:12px;color:#3B6D11;"><strong>Verde</strong> ≥ 90% de meta · en rango</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--naranja-light);border-radius:var(--border-radius-md);">
+        <div class="semaforo sem-amarillo"></div>
+        <div style="font-size:12px;color:#854F0B;"><strong>Naranja</strong> 70–89% · requiere seguimiento</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--magenta-light);border-radius:var(--border-radius-md);">
+        <div class="semaforo sem-rojo"></div>
+        <div style="font-size:12px;color:#a3005a;"><strong>Magenta</strong> < 70% · alerta, acción inmediata</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-mejora" class="hidden">
+    <div class="section-title"><div class="section-dot" style="background:var(--verde)"></div>Integración PHVA en el sistema de indicadores</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:1.5rem;">
+      <div class="diag-card" style="border-top:3px solid var(--verde);">
+        <div style="font-size:13px;font-weight:500;color:var(--verde);margin-bottom:8px;">P — Planear</div>
+        <ul class="diag-list" style="line-height:1.8;">
+          <li>Establecer metas anuales retadoras (+5-10% por ciclo)</li>
+          <li>Relacionar cada KPI a un objetivo institucional explícito</li>
+          <li>Definir responsable, fuente de datos y frecuencia</li>
+          <li>Crear ficha técnica para cada indicador reformulado</li>
+        </ul>
+      </div>
+      <div class="diag-card" style="border-top:3px solid var(--naranja);">
+        <div style="font-size:13px;font-weight:500;color:var(--naranja);margin-bottom:8px;">H — Hacer</div>
+        <ul class="diag-list" style="line-height:1.8;">
+          <li>Captura de datos automatizada donde sea posible</li>
+          <li>Reportes del dashboard en reuniones de equipo (no solo PDF)</li>
+          <li>Registro de acciones correctivas asociadas a cada KPI rojo</li>
+          <li>Bitácora de intervenciones por sede/proceso</li>
+        </ul>
+      </div>
+      <div class="diag-card" style="border-top:3px solid var(--magenta);">
+        <div style="font-size:13px;font-weight:500;color:var(--magenta);margin-bottom:8px;">V — Verificar</div>
+        <ul class="diag-list" style="line-height:1.8;">
+          <li>Revisión semestral de umbrales y metas</li>
+          <li>Análisis de tendencia (no solo snapshot del período)</li>
+          <li>Comparativo entre sedes (Bogotá, Pereira, Valledupar)</li>
+          <li>Validación con auditorías internas/externas ISO 9001</li>
+        </ul>
+      </div>
+      <div class="diag-card" style="border-top:3px solid #7fb536;">
+        <div style="font-size:13px;font-weight:500;color:var(--verde);margin-bottom:8px;">A — Actuar</div>
+        <ul class="diag-list" style="line-height:1.8;">
+          <li>Cada KPI en rojo genera plan de acción en ≤15 días</li>
+          <li>KPIs saturados se ajustan o reemplazan anualmente</li>
+          <li>Socialización de resultados con equipo y directivos</li>
+          <li>Los KPIs son insumo, no el objetivo final</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-title"><div class="section-dot" style="background:var(--naranja)"></div>Criterios para indicadores retadores y sostenibles</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;">
+      <div class="rec-box" style="border-left-color:var(--verde);">Meta = resultado anterior × 1.05 a 1.10 · jamás fijar meta en punto ya alcanzado permanentemente</div>
+      <div class="rec-box" style="border-left-color:var(--naranja);">Si un KPI cumple 3 años seguidos sin variación, su meta debe recalcularse o eliminarse</div>
+      <div class="rec-box" style="border-left-color:var(--magenta);">Cada KPI debe responder: "¿Qué decisión cambia si este número sube o baja?"</div>
+      <div class="rec-box" style="border-left-color:var(--verde);">Vincular al menos 3 KPIs directamente a metas del PEI y Plan de Desarrollo Institucional</div>
+    </div>
+  </div>
+
+  <div id="tab-recomendaciones" class="hidden">
+    <div class="section-title"><div class="section-dot" style="background:var(--verde)"></div>Recomendaciones estratégicas para la sostenibilidad del sistema</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:1.5rem;">
+      <div class="diag-card">
+        <div style="font-size:12px;font-weight:500;color:var(--magenta);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Gobernanza del sistema</div>
+        <ul class="diag-list" style="line-height:1.9;">
+          <li>Asignar un "dueño" por cada KPI con rendición de cuentas</li>
+          <li>Revisión anual del portafolio completo de indicadores</li>
+          <li>Comité de indicadores: coordinación + calidad + TI</li>
+          <li>Cada KPI debe tener ficha técnica actualizada</li>
+        </ul>
+      </div>
+      <div class="diag-card">
+        <div style="font-size:12px;font-weight:500;color:var(--verde);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Automatización y datos</div>
+        <ul class="diag-list" style="line-height:1.9;">
+          <li>Conectar datos de LMS, repositorio y SIGB al dashboard</li>
+          <li>Eliminar reportes manuales de captura repetitiva</li>
+          <li>Dashboards en PowerBI o Tableau con acceso por rol</li>
+          <li>Alertas automáticas cuando KPI cae bajo umbral naranja</li>
+        </ul>
+      </div>
+      <div class="diag-card">
+        <div style="font-size:12px;font-weight:500;color:var(--naranja);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Cultura de calidad</div>
+        <ul class="diag-list" style="line-height:1.9;">
+          <li>Socializar resultados en reuniones de equipo (no solo como informe)</li>
+          <li>Celebrar mejoras, no solo sancionar incumplimientos</li>
+          <li>Capacitar equipo en lectura e interpretación de KPIs</li>
+          <li>Los indicadores deben generar conversación, no solo reporte</li>
+        </ul>
+      </div>
+      <div class="diag-card">
+        <div style="font-size:12px;font-weight:500;color:var(--verde);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Prioridades 2026</div>
+        <ul class="diag-list" style="line-height:1.9;">
+          <li>Implementar NPS como reemplazo del 99% de satisfacción</li>
+          <li>Crear KPI de impacto académico (uso recursos en trabajos/tesis)</li>
+          <li>Medir uso digital por programa académico activo</li>
+          <li>Lanzar dashboard unificado por sedes con comparativos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="background:var(--verde-light);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-top:0.5rem;">
+      <div style="font-size:13px;font-weight:500;color:#3B6D11;margin-bottom:6px;">Principio rector del sistema reformulado</div>
+      <div style="font-size:13px;color:#3B6D11;line-height:1.7;">Un indicador que siempre cumple sin esfuerzo no mide calidad, mide comodidad. Un sistema de calidad ISO 9001 en IES debe demostrar mejora continua y aporte al aprendizaje y la misión institucional — no solo cumplimiento formal de metas estáticas.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const kpis = [
+  {cat:"Servicio y usuarios", n:"Índice de experiencia del usuario (NPS adaptado)", f:"(Promotores − Detractores) / Total encuestados × 100", freq:"Semestral", meta:"NPS ≥ 60 puntos", tipo:"E", sem:"verde"},
+  {cat:"Servicio y usuarios", n:"Tasa de retorno de usuarios formados", f:"Usuarios que repiten formación / Total usuarios formados × 100", freq:"Anual", meta:"≥ 40%", tipo:"E", sem:"naranja"},
+  {cat:"Recursos de información", n:"Ratio de uso digital por estudiante activo", f:"Total consultas digitales / Nº estudiantes matriculados activos", freq:"Semestral", meta:"≥ 6 consultas/est.", tipo:"E", sem:"rojo"},
+  {cat:"Recursos de información", n:"Cobertura de programas con recursos bibliográficos pertinentes", f:"Programas con colección actualizada / Total programas activos × 100", freq:"Anual", meta:"≥ 85%", tipo:"E", sem:"naranja"},
+  {cat:"Recursos de información", n:"Tasa de crecimiento neto de colección digital", f:"(Recursos digitales año n − año n-1) / Recursos año n-1 × 100", freq:"Anual", meta:"≥ +3%", tipo:"T", sem:"rojo"},
+  {cat:"Impacto académico", n:"% de programas académicos con syllabus cubierto por colección", f:"Programas con ≥ 80% de títulos sugeridos disponibles / Total programas × 100", freq:"Anual", meta:"≥ 75%", tipo:"E", sem:"naranja"},
+  {cat:"Impacto académico", n:"Citas al repositorio institucional", f:"Nº de citas externas al repositorio (Google Scholar, Scopus) en el período", freq:"Anual", meta:"Crecimiento ≥ 10% anual", tipo:"E", sem:"verde"},
+  {cat:"Formación y extensión", n:"Cobertura de formación de usuarios por programas", f:"Programas académicos con al menos 1 sesión de formación / Total programas × 100", freq:"Semestral", meta:"≥ 70%", tipo:"T", sem:"naranja"},
+  {cat:"Formación y extensión", n:"Alcance e impacto de extensión cultural", f:"Asistentes únicos a actividades culturales / Total comunidad académica × 100", freq:"Anual", meta:"≥ 5% comunidad", tipo:"T", sem:"verde"},
+  {cat:"Calidad y mejora continua", n:"Eficacia de planes de mejora cerrados", f:"Acciones cerradas con resultado verificado / Total acciones planificadas × 100", freq:"Semestral", meta:"≥ 80%", tipo:"E", sem:"verde"},
+  {cat:"Calidad y mejora continua", n:"Cumplimiento de información documentada activa", f:"Documentos divulgados y apropiados / Total documentos vigentes × 100", freq:"Semestral", meta:"≥ 90%", tipo:"T", sem:"naranja"},
+  {cat:"Calidad y mejora continua", n:"Ciclos PHVA completados por proceso", f:"Ciclos de mejora con las 4 etapas documentadas / Total ciclos iniciados", freq:"Anual", meta:"100% de ciclos iniciados cerrados", tipo:"T", sem:"verde"},
+  {cat:"Talento humano", n:"Índice de clima laboral y bienestar", f:"Promedio ponderado: satisfacción bienestar (40%) + cobertura (30%) + rotación inversa (30%)", freq:"Semestral", meta:"Índice ≥ 80 / 100", tipo:"T", sem:"verde"},
+  {cat:"Talento humano", n:"Impacto medido de la formación del equipo", f:"Actividades de formación con aplicación verificada en servicio / Total actividades × 100", freq:"Semestral", meta:"≥ 60%", tipo:"T", sem:"naranja"},
+  {cat:"Talento humano", n:"Índice de estabilidad del equipo por sede", f:"1 − (Rotación semestral) · Media sedes ponderada", freq:"Semestral", meta:"≥ 97% estabilidad", tipo:"O", sem:"verde"},
+  {cat:"Infraestructura y TI", n:"Disponibilidad real de servicios tecnológicos", f:"Horas de disponibilidad efectiva / Horas de operación esperadas × 100", freq:"Semestral", meta:"≥ 99%", tipo:"O", sem:"verde"},
+  {cat:"Infraestructura y TI", n:"Cumplimiento de ANS en soporte TI y mantenimiento", f:"Casos resueltos en ANS / Total casos × 100", freq:"Semestral", meta:"≥ 90%", tipo:"O", sem:"verde"},
+  {cat:"Gestión financiera", n:"Eficiencia en ejecución presupuestal de biblioteca", f:"Presupuesto ejecutado en actividades clave / Presupuesto asignado × 100", freq:"Semestral", meta:"Entre 90-105%", tipo:"T", sem:"verde"},
+];
+
+function renderKPI(filtered) {
+  const body = document.getElementById('kpiBody');
+  body.innerHTML = '';
+  filtered.forEach((k, i) => {
+    const tipoClass = k.tipo === 'E' ? 'tipo-e' : k.tipo === 'T' ? 'tipo-t' : 'tipo-o';
+    const tipoLabel = k.tipo === 'E' ? 'Estratégico' : k.tipo === 'T' ? 'Táctico' : 'Operativo';
+    const semClass = 'sem-' + k.sem;
+    body.innerHTML += `<tr>
+      <td style="color:var(--color-text-secondary);font-size:12px;">${i+1}</td>
+      <td><span class="pill ${k.tipo==='E'?'pill-magenta':k.tipo==='T'?'pill-naranja':'pill-verde'}" style="font-size:10px;">${k.cat}</span></td>
+      <td style="font-weight:500;font-size:13px;">${k.n}</td>
+      <td style="font-size:12px;color:var(--color-text-secondary);">${k.f}</td>
+      <td style="white-space:nowrap;font-size:12px;">${k.freq}</td>
+      <td style="font-size:12px;font-weight:500;">${k.meta}</td>
+      <td><span class="tipo-tag ${tipoClass}">${tipoLabel}</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px;"><div class="semaforo ${semClass}"></div></div></td>
+    </tr>`;
+  });
+}
+
+function filterKPI(tipo) {
+  const f = tipo === 'ALL' ? kpis : kpis.filter(k => k.tipo === tipo);
+  renderKPI(f);
+}
+
+renderKPI(kpis);
+
+function showTab(id) {
+  ['diagnostico','kpis','visualizacion','mejora','recomendaciones'].forEach(t => {
+    document.getElementById('tab-' + t).classList.add('hidden');
+  });
+  document.getElementById('tab-' + id).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['diagnostico','kpis','visualizacion','mejora','recomendaciones'][i] === id);
+  });
+}
+</script>
