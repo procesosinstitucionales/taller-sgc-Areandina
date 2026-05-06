@@ -1,0 +1,423 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.dash { padding: 1.5rem 1rem; }
+.header-bar {
+  background: linear-gradient(135deg, #1a2540 0%, #2d3f6e 100%);
+  border-radius: var(--border-radius-lg); padding: 1.5rem 2rem; margin-bottom: 1.5rem; color: white;
+}
+.header-bar h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; color: white; }
+.header-bar p { font-size: 13px; opacity: 0.75; color: rgba(255,255,255,0.8); }
+.badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+.badge-iso { background: rgba(127,181,54,0.25); color: #b8e06a; }
+.badge-val { background: rgba(245,156,47,0.2); color: #f9c87e; }
+.badge-lib { background: rgba(230,0,126,0.2); color: #f48cce; }
+
+.section-title {
+  font-size: 12px; font-weight: 500; color: var(--color-text-secondary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-border-tertiary);
+}
+
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 8px; margin-bottom: 1.5rem; }
+.kpi-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; text-align: center; }
+.kpi-num { font-size: 26px; font-weight: 500; line-height: 1; margin-bottom: 4px; }
+.kpi-label { font-size: 11px; color: var(--color-text-secondary); }
+.c-total .kpi-num { color: var(--color-text-primary); }
+.c-risk .kpi-num { color: #e24b4a; }
+.c-opp .kpi-num { color: #7fb536; }
+.c-alto .kpi-num { color: #e24b4a; }
+.c-medio .kpi-num { color: #F59C2F; }
+.c-bajo .kpi-num { color: #7fb536; }
+.c-new .kpi-num { color: #e6007e; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 1rem; flex-wrap: wrap; }
+.tab-btn {
+  font-size: 12px; padding: 5px 12px; border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s;
+}
+.tab-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media(max-width:580px) { .two-col { grid-template-columns: 1fr; } }
+
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+
+.bar-rows { display: flex; flex-direction: column; gap: 7px; }
+.bar-row { display: flex; align-items: center; gap: 8px; }
+.bar-label { font-size: 11px; color: var(--color-text-secondary); min-width: 130px; text-align: right; }
+.bar-track { flex: 1; background: var(--color-background-secondary); border-radius: 4px; height: 15px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 6px; }
+.bar-val { font-size: 10px; font-weight: 500; color: white; }
+
+.full-table-wrap { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+.ftable { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 680px; }
+.ftable th {
+  background: var(--color-background-secondary); padding: 6px 8px;
+  font-weight: 500; font-size: 10px; color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-tertiary); text-align: left;
+  position: sticky; top: 0; z-index: 2;
+}
+.ftable td { padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); vertical-align: top; line-height: 1.4; }
+.ftable tr:hover td { background: var(--color-background-secondary); }
+.tr { color: #e24b4a; font-weight: 500; font-size: 10px; }
+.to { color: #7fb536; font-weight: 500; font-size: 10px; }
+.na { color: #e24b4a; font-weight: 500; }
+.nm { color: #F59C2F; font-weight: 500; }
+.nb { color: #7fb536; }
+
+.pill { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
+.p-mantener { background: #eaf3de; color: #3b6d11; }
+.p-reformular { background: #e6f1fb; color: #185fa5; }
+.p-fusionar { background: #faeeda; color: #854f0b; }
+.p-eliminar { background: #fcebeb; color: #a32d2d; }
+.p-escalar { background: #fce6f2; color: #7a0057; }
+.p-accion { background: #eeedfe; color: #3c3489; }
+
+.sem-grid { display: flex; flex-direction: column; gap: 5px; }
+.sem-row { display: flex; align-items: flex-start; gap: 8px; padding: 7px 10px; border-radius: var(--border-radius-md); cursor: pointer; transition: background 0.12s; }
+.sem-row:hover { background: var(--color-background-secondary); }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.d-alto { background: #e24b4a; }
+.d-medio { background: #F59C2F; }
+.d-bajo { background: #7fb536; }
+.d-nuevo { background: #e6007e; }
+.sem-code { font-size: 10px; font-weight: 500; color: var(--color-text-secondary); min-width: 50px; }
+.sem-desc { font-size: 11px; color: var(--color-text-primary); flex: 1; line-height: 1.4; }
+.sbadge { font-size: 10px; padding: 2px 6px; border-radius: 8px; font-weight: 500; flex-shrink: 0; }
+.sb-alto { background: #fcebeb; color: #a32d2d; }
+.sb-medio { background: #fef3e2; color: #854f0b; }
+.sb-bajo { background: #eef6d6; color: #3b6d11; }
+.sb-opp { background: #fce6f2; color: #7a0057; }
+
+.alert { border-radius: var(--border-radius-md); padding: 10px 13px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; border-left: 3px solid; }
+.a-critical { border-color: #e24b4a; background: #fcebeb; color: #a32d2d; }
+.a-warning { border-color: #F59C2F; background: #fef3e2; color: #854f0b; }
+.a-info { border-color: #7fb536; background: #eef6d6; color: #3b6d11; }
+.a-mag { border-color: #e6007e; background: #fce6f2; color: #7a0057; }
+.at { font-weight: 500; margin-bottom: 3px; }
+
+.rec-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 11px 15px; margin-bottom: 9px; }
+.rec-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.rec-num { font-size: 11px; font-weight: 500; color: #e6007e; min-width: 40px; }
+.rec-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.rec-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+
+.madurez-scale { display: flex; gap: 4px; margin: 8px 0 4px; }
+.ms { flex: 1; height: 8px; border-radius: 4px; background: var(--color-background-secondary); }
+.ms.a1 { background: #e24b4a; } .ms.a2 { background: #F59C2F; }
+
+.footer-note { font-size: 11px; color: var(--color-text-secondary); text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 0.5px solid var(--color-border-tertiary); }
+
+.tag-proceso { font-size: 10px; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+</style>
+
+<div class="dash">
+
+<div class="header-bar">
+  <h1>Dashboard ejecutivo — Gestión de riesgos y oportunidades ISO 9001:2015</h1>
+  <p>Biblioteca · Fundación Universitaria del Área Andina · Datos validados registro a registro</p>
+  <div class="badges">
+    <span class="badge badge-iso">ISO 9001:2015 / Proyección 2026</span>
+    <span class="badge badge-val">Datos validados ✓ 45 registros</span>
+    <span class="badge badge-lib">30 riesgos · 15 oportunidades</span>
+  </div>
+</div>
+
+<div class="section-title">Indicadores clave — datos validados</div>
+<div class="kpi-grid">
+  <div class="kpi-card c-total"><div class="kpi-num">45</div><div class="kpi-label">Total registros</div></div>
+  <div class="kpi-card c-risk"><div class="kpi-num">30</div><div class="kpi-label">Riesgos</div></div>
+  <div class="kpi-card c-opp"><div class="kpi-num">15</div><div class="kpi-label">Oportunidades</div></div>
+  <div class="kpi-card c-alto"><div class="kpi-num">0</div><div class="kpi-label">Nivel alto</div></div>
+  <div class="kpi-card c-medio"><div class="kpi-num">9</div><div class="kpi-label">Nivel medio</div></div>
+  <div class="kpi-card c-bajo"><div class="kpi-num">36</div><div class="kpi-label">Nivel bajo</div></div>
+  <div class="kpi-card c-new"><div class="kpi-num">13</div><div class="kpi-label">Sin tratamiento</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('registros')">Registro completo validado</button>
+  <button class="tab-btn" onclick="showTab('semaforo')">Semáforo</button>
+  <button class="tab-btn" onclick="showTab('diagnostico')">Diagnóstico</button>
+  <button class="tab-btn" onclick="showTab('reforma')">Reformulación</button>
+  <button class="tab-btn" onclick="showTab('emergentes')">Emergentes</button>
+  <button class="tab-btn" onclick="showTab('recomendaciones')">Recomendaciones</button>
+</div>
+
+<!-- TAB 1: REGISTRO COMPLETO VALIDADO -->
+<div id="tab-registros" class="panel active">
+  <div class="section-title">Matriz completa validada — 30 riesgos + 15 oportunidades = 45 registros</div>
+  <div class="full-table-wrap">
+    <table class="ftable">
+      <thead><tr><th>#</th><th>Tipo</th><th>Cod.</th><th>Proceso</th><th>Subproceso</th><th>Descripción del riesgo / oportunidad</th><th>P</th><th>I</th><th>C</th><th>Eval</th><th>Nivel</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Direc. Estratégico</td><td>Aumento en el número de vínculos institucionales a nivel local, nacional e internacional</td><td>3</td><td>3</td><td>1</td><td>9</td><td class="nb">Bajo</td></tr>
+        <tr><td>2</td><td class="to">OPP</td><td>O2</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Direc. Estratégico</td><td>Alineación con los objetivos institucionales de la Fundación Universitaria del Área Andina</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>3</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Direc. Estratégico</td><td>Posible disminución en los recursos disponibles para las biblioteca</td><td>3</td><td>3</td><td>2</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>4</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Direc. Estratégico</td><td>Procesos de biblioteca no sean tenidos en cuenta como estratégicos dentro de la Institución</td><td>3</td><td>2</td><td>3</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>5</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Gestión Calidad</td><td>Se requiere contar con más horas de práctica para los auditores formados en ISO 9001</td><td>1</td><td>2</td><td>2</td><td>4</td><td class="nb">Bajo</td></tr>
+        <tr><td>6</td><td class="to">OPP</td><td>O2</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Gestión Calidad</td><td>Fortalecer los mecanismos de apropiación de los procesos con el apoyo de las áreas</td><td>2</td><td>3</td><td>2</td><td>12</td><td class="nm">Medio</td></tr>
+        <tr><td>7</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Gestión Calidad</td><td>Programa de auditoría no defina la metodología para establecer la frecuencia de auditoría</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="nb">Bajo</td></tr>
+        <tr><td>8</td><td class="tr">RIESGO</td><td>R1-2024</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Gestión Calidad</td><td>Programa de auditoría no fuese ejecutado en las condiciones previamente establecidas</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="nb">Bajo</td></tr>
+        <tr><td>9</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Planeación Inst.</td><td class="tag-proceso">Gestión Calidad</td><td>No se llegara a implementar oportunamente las acciones correctivas o de mejora de las auditorías</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>10</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Actualización del equipamiento tecnológico de acuerdo con las últimas tendencias para biblioteca</td><td>3</td><td>3</td><td>2</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>11</td><td class="to">OPP</td><td>O2</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Rediseño de la estructura informacional de la biblioteca digital para dinamizar el acceso</td><td>3</td><td>3</td><td>1</td><td>9</td><td class="nb">Bajo</td></tr>
+        <tr><td>12</td><td class="to">OPP</td><td>O3</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Incorporación de mecanismos de atención digital para solicitudes de recursos e información</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>13</td><td class="to">OPP</td><td>O4</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Fortalecimiento de la inversión para adquisición de colecciones bibliográficas</td><td>3</td><td>3</td><td>1</td><td>9</td><td class="nb">Bajo</td></tr>
+        <tr><td>14</td><td class="to">OPP</td><td>O5</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Optimización del módulo de Adquisiciones del Sistema KOHA para trazabilidad de recursos</td><td>1</td><td>2</td><td>1</td><td>2</td><td class="nb">Bajo</td></tr>
+        <tr><td>15</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Adquisición de material bibliográfico con bajo uso o poca pertinencia curricular</td><td>2</td><td>3</td><td>2</td><td>12</td><td class="nm">Medio</td></tr>
+        <tr><td>16</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Recursos financieros insuficientes para adquisición de material bibliográfico</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>17</td><td class="tr">RIESGO</td><td>R3</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Recursos de Información</td><td>Deserción de estudiantes por desconocimiento de servicios y recursos disponibles en biblioteca</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>18</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Desarrollo de cursos específicos para orientar al usuario sobre la biblioteca y sus servicios</td><td>3</td><td>3</td><td>2</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>19</td><td class="to">OPP</td><td>O2</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Incorporación de servicio de autopréstamo para autogestión del usuario en servicios de biblioteca</td><td>3</td><td>3</td><td>1</td><td>9</td><td class="nb">Bajo</td></tr>
+        <tr><td>20</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Usuario no realice la devolución del material bibliográfico prestado</td><td>2</td><td>3</td><td>2</td><td>12</td><td class="nb">Bajo*</td></tr>
+        <tr><td>21</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Fallas en el sistema KOHA o en las bases de datos que interrumpan los servicios</td><td>3</td><td>3</td><td>2</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>22</td><td class="tr">RIESGO</td><td>R3</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Deterioro de recursos de información por parte de los usuarios (material o equipos tecnológicos)</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>23</td><td class="tr">RIESGO</td><td>R4</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Insuficiencia de espacios físicos para atender los requerimientos de los usuarios</td><td>2</td><td>3</td><td>1</td><td>6</td><td class="nb">Bajo</td></tr>
+        <tr><td>24</td><td class="tr">RIESGO</td><td>R5</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>No devolución de material en plazo prolongado generando aumento de multas en sistema KOHA</td><td>2</td><td>3</td><td>2</td><td>12</td><td class="nm">Medio</td></tr>
+        <tr><td>25</td><td class="tr">RIESGO</td><td>R6</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Servicios y Espacios</td><td>Rotación continua de personal debido a desmotivación laboral dentro del equipo</td><td>1</td><td>3</td><td>2</td><td>6</td><td class="nb">Bajo</td></tr>
+        <tr><td>26</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Difusión y Extensión</td><td>Incorporación de estrategias de divulgación digital para mayor visibilidad de servicios</td><td>3</td><td>3</td><td>1</td><td>9</td><td class="nb">Bajo</td></tr>
+        <tr><td>27</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Gestión Bibl.</td><td class="tag-proceso">Difusión y Extensión</td><td>Baja participación en las actividades de extensión cultural programadas</td><td>3</td><td>2</td><td>1</td><td>6</td><td class="nb">Bajo</td></tr>
+        <tr><td>28</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Talento Humano</td><td class="tag-proceso">N.A.</td><td>Personal contratado para biblioteca no cumpla con las competencias definidas para el cargo</td><td>1</td><td>2</td><td>1</td><td>2</td><td class="nb">Bajo</td></tr>
+        <tr><td>29</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Talento Humano</td><td class="tag-proceso">N.A.</td><td>Desactualización de las competencias del personal de biblioteca frente a nuevas tecnologías</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>30</td><td class="tr">RIESGO</td><td>R3</td><td class="tag-proceso">Talento Humano</td><td class="tag-proceso">N.A.</td><td>En la inducción el personal no adquiera los conocimientos requeridos para sus funciones</td><td>1</td><td>2</td><td>1</td><td>2</td><td class="nb">Bajo</td></tr>
+        <tr><td>31</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Talento Humano</td><td class="tag-proceso">N.A.</td><td>Grupos formativos y plan de formación a través de SEPA (cursos virtuales)</td><td>3</td><td>3</td><td>1</td><td>9</td><td class="nb">Bajo</td></tr>
+        <tr><td>32</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Adm. e Infraest.</td><td class="tag-proceso">N.A.</td><td>No contar con los recursos de información solicitados en el tiempo requerido</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>33</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Adm. e Infraest.</td><td class="tag-proceso">N.A.</td><td>Fallas en la plataforma SAP que interrumpan procesos administrativos</td><td>1</td><td>2</td><td>1</td><td>2</td><td class="nb">Bajo</td></tr>
+        <tr><td>34</td><td class="tr">RIESGO</td><td>R3</td><td class="tag-proceso">Adm. e Infraest.</td><td class="tag-proceso">N.A.</td><td>No aprobación de renovaciones de licencias de recursos de biblioteca</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>35</td><td class="tr">RIESGO</td><td>R4</td><td class="tag-proceso">Adm. e Infraest.</td><td class="tag-proceso">N.A.</td><td>Daño locativo por incendio o inundación para documentos y colecciones impresas</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>36</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Adm. e Infraest.</td><td class="tag-proceso">N.A.</td><td>Definición de la tabla de retención documental de los procesos de biblioteca</td><td>3</td><td>2</td><td>3</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>37</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Gestión Financiera</td><td class="tag-proceso">N.A.</td><td>No contar con recursos financieros suficientes para la biblioteca</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>38</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Gestión Financiera</td><td class="tag-proceso">N.A.</td><td>No aprobación total de los requerimientos presupuestales solicitados por biblioteca</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>39</td><td class="tr">RIESGO</td><td>R3</td><td class="tag-proceso">Gestión Financiera</td><td class="tag-proceso">N.A.</td><td>No ejecución de pagos a proveedores de recursos bibliográficos</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>40</td><td class="tr">RIESGO</td><td>R1</td><td class="tag-proceso">Tecnología</td><td class="tag-proceso">N.A.</td><td>Falta de personal idóneo para atender requerimientos de soporte tecnológico de biblioteca</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>41</td><td class="tr">RIESGO</td><td>R2</td><td class="tag-proceso">Tecnología</td><td class="tag-proceso">N.A.</td><td>Tecnología no responde en tiempos establecidos a requerimientos del personal de biblioteca</td><td>3</td><td>3</td><td>2</td><td>18</td><td class="nm">Medio</td></tr>
+        <tr><td>42</td><td class="tr">RIESGO</td><td>R3</td><td class="tag-proceso">Tecnología</td><td class="tag-proceso">N.A.</td><td>Indisponibilidad de los servicios por fallas en infraestructura tecnológica</td><td>2</td><td>3</td><td>2</td><td>12</td><td class="nm">Medio</td></tr>
+        <tr><td>43</td><td class="tr">RIESGO</td><td>R4</td><td class="tag-proceso">Tecnología</td><td class="tag-proceso">N.A.</td><td>Software y hardware desactualizados que limiten la prestación de servicios digitales</td><td>1</td><td>3</td><td>1</td><td>3</td><td class="nb">Bajo</td></tr>
+        <tr><td>44</td><td class="tr">RIESGO</td><td>R5</td><td class="tag-proceso">Tecnología</td><td class="tag-proceso">N.A.</td><td>Pérdida de la información institucional o de usuarios por fallas en sistemas de respaldo</td><td>2</td><td>3</td><td>2</td><td>12</td><td class="nm">Medio</td></tr>
+        <tr><td>45</td><td class="to">OPP</td><td>O1</td><td class="tag-proceso">Tecnología</td><td class="tag-proceso">N.A.</td><td>Adquisición de hardware con mayor capacidad de almacenamiento para servicios digitales</td><td>3</td><td>2</td><td>1</td><td>6</td><td class="nb">Bajo</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:8px;font-size:11px;color:var(--color-text-secondary);">
+    * R1 Servicios (registro 20) tiene evaluación 12 pero está clasificado como nivel "Bajo" en la matriz original — inconsistencia metodológica identificada. P=Probabilidad · I=Impacto · C=Controles · Eval=P×I×C
+  </div>
+</div>
+
+<!-- TAB 2: SEMÁFORO -->
+<div id="tab-semaforo" class="panel">
+  <div class="section-title">Semáforo de riesgos y oportunidades por nivel de valoración</div>
+  <div class="two-col">
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Nivel medio — 9 registros (requieren atención prioritaria)</div>
+      <div class="sem-grid">
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R1 Planeac.</div><div class="sem-desc">Disminución recursos disponibles biblioteca</div><div class="sbadge sb-medio">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R2 Planeac.</div><div class="sem-desc">Procesos de biblioteca no estratégicos</div><div class="sbadge sb-medio">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">O2 Calidad</div><div class="sem-desc">Apropiación de procesos con apoyo áreas</div><div class="sbadge sb-opp">12</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">O1 Rec.Inf.</div><div class="sem-desc">Actualización equipamiento tecnológico</div><div class="sbadge sb-medio">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R1 Rec.Inf.</div><div class="sem-desc">Material bibliográfico con bajo uso</div><div class="sbadge sb-medio">12</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">O1 Servicios</div><div class="sem-desc">Cursos formación de usuarios biblioteca</div><div class="sbadge sb-opp">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R2 Servicios</div><div class="sem-desc">Fallas KOHA o bases de datos</div><div class="sbadge sb-medio">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R5 Servicios</div><div class="sem-desc">No devolución prolongada — multas KOHA</div><div class="sbadge sb-medio">12</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">O1 Admin.</div><div class="sem-desc">Tabla retención documental biblioteca</div><div class="sbadge sb-opp">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R2 Tecnología</div><div class="sem-desc">Soporte TI sin respuesta en tiempos</div><div class="sbadge sb-medio">18</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R3 Tecnología</div><div class="sem-desc">Indisponibilidad servicios infraestructura</div><div class="sbadge sb-medio">12</div></div>
+        <div class="sem-row"><div class="dot d-medio"></div><div class="sem-code">R5 Tecnología</div><div class="sem-desc">Pérdida de información institucional</div><div class="sbadge sb-medio">12</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Nivel bajo — 33 registros</div>
+      <div class="sem-grid" style="max-height:380px;overflow-y:auto;">
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O1 Planeac.</div><div class="sem-desc">Vínculos institucionales</div><div class="sbadge sb-bajo">9</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O2 Planeac.</div><div class="sem-desc">Alineación objetivos institucionales</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O1 Calidad</div><div class="sem-desc">Práctica auditores ISO 9001</div><div class="sbadge sb-bajo">4</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 Calidad</div><div class="sem-desc">Metodología auditoría no definida</div><div class="sbadge sb-bajo">1</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1-24 Calidad</div><div class="sem-desc">Auditoría no ejecutada</div><div class="sbadge sb-bajo">1</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R2 Calidad</div><div class="sem-desc">Acciones correctivas no implementadas</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O2 Rec.Inf.</div><div class="sem-desc">Rediseño biblioteca digital</div><div class="sbadge sb-bajo">9</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O3 Rec.Inf.</div><div class="sem-desc">Atención digital solicitudes</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O4 Rec.Inf.</div><div class="sem-desc">Inversión colecciones bibliográficas</div><div class="sbadge sb-bajo">9</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O5 Rec.Inf.</div><div class="sem-desc">Optimización KOHA adquisiciones</div><div class="sbadge sb-bajo">2</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R2 Rec.Inf.</div><div class="sem-desc">Recursos financieros insuficientes</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R3 Rec.Inf.</div><div class="sem-desc">Deserción por desconocimiento servicios</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O2 Servicios</div><div class="sem-desc">Servicio autopréstamo</div><div class="sbadge sb-bajo">9</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 Servicios</div><div class="sem-desc">No devolución material bibliográfico</div><div class="sbadge sb-bajo">12*</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R3 Servicios</div><div class="sem-desc">Deterioro recursos por usuarios</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R4 Servicios</div><div class="sem-desc">Espacios insuficientes para usuarios</div><div class="sbadge sb-bajo">6</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R6 Servicios</div><div class="sem-desc">Rotación de personal</div><div class="sbadge sb-bajo">6</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O1 Difusión</div><div class="sem-desc">Divulgación digital servicios biblioteca</div><div class="sbadge sb-bajo">9</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 Difusión</div><div class="sem-desc">Baja participación extensión cultural</div><div class="sbadge sb-bajo">6</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 RRHH</div><div class="sem-desc">Personal sin competencias requeridas</div><div class="sbadge sb-bajo">2</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R2 RRHH</div><div class="sem-desc">Competencias del personal desactualizadas</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R3 RRHH</div><div class="sem-desc">Inducción sin conocimientos adquiridos</div><div class="sbadge sb-bajo">2</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O1 RRHH</div><div class="sem-desc">Plan formación SEPA virtual</div><div class="sbadge sb-bajo">9</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 Admin.</div><div class="sem-desc">Recursos no disponibles en tiempo</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R2 Admin.</div><div class="sem-desc">Fallas en plataforma SAP</div><div class="sbadge sb-bajo">2</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R3 Admin.</div><div class="sem-desc">No renovación licencias biblioteca</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R4 Admin.</div><div class="sem-desc">Daño locativo incendio/inundación</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 Financiero</div><div class="sem-desc">Sin recursos financieros biblioteca</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R2 Financiero</div><div class="sem-desc">Requerimientos presupuestales no aprobados</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R3 Financiero</div><div class="sem-desc">Pagos a proveedores no ejecutados</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R1 Tecnología</div><div class="sem-desc">Falta personal TI idóneo</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">R4 Tecnología</div><div class="sem-desc">Software y hardware desactualizados</div><div class="sbadge sb-bajo">3</div></div>
+        <div class="sem-row"><div class="dot d-bajo"></div><div class="sem-code">O1 Tecnología</div><div class="sem-desc">Hardware mayor almacenamiento</div><div class="sbadge sb-bajo">6</div></div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:var(--color-text-secondary);">* R1 Servicios: eval=12 pero clasificado como Bajo en la matriz original — inconsistencia a corregir</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: DIAGNÓSTICO -->
+<div id="tab-diagnostico" class="panel">
+  <div class="section-title">Diagnóstico crítico — hallazgos validados</div>
+  <div class="two-col">
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Distribución por proceso (datos reales)</div>
+      <div class="bar-rows">
+        <div class="bar-row"><div class="bar-label">Gestión de biblioteca</div><div class="bar-track"><div class="bar-fill" style="width:60%;background:#185fa5"><span class="bar-val">27 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Planeación institucional</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:#534ab7"><span class="bar-val">9 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Tecnología y sistemas</div><div class="bar-track"><div class="bar-fill" style="width:13%;background:#e6007e"><span class="bar-val">6 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Adm. e infraestructura</div><div class="bar-track"><div class="bar-fill" style="width:11%;background:#F59C2F"><span class="bar-val">5 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Gestión financiera</div><div class="bar-track"><div class="bar-fill" style="width:6%;background:#e24b4a"><span class="bar-val">3 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Talento humano</div><div class="bar-track"><div class="bar-fill" style="width:9%;background:#7fb536"><span class="bar-val">4 reg.</span></div></div></div>
+      </div>
+      <div style="margin-top:14px;font-size:13px;font-weight:500;margin-bottom:8px;">Problemas de calidad identificados</div>
+      <div class="bar-rows">
+        <div class="bar-row"><div class="bar-label">Redacción condicional débil</div><div class="bar-track"><div class="bar-fill" style="width:85%;background:#e24b4a"><span class="bar-val">38/45</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Sin acción de tratamiento</div><div class="bar-track"><div class="bar-fill" style="width:29%;background:#e24b4a"><span class="bar-val">13/45</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Duplicados / redundantes</div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#F59C2F"><span class="bar-val">8 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Nivel subestimado</div><div class="bar-track"><div class="bar-fill" style="width:13%;background:#F59C2F"><span class="bar-val">6 reg.</span></div></div></div>
+        <div class="bar-row"><div class="bar-label">Bien formulados</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:#7fb536"><span class="bar-val">9 reg.</span></div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Hallazgos críticos validados</div>
+      <div class="alert a-critical"><div class="at">Ningún riesgo en nivel ALTO — subestimación sistemática</div>Con 30 riesgos activos y operación digital intensa, la ausencia total de nivel ALTO indica sobreestimación de controles o subvaloración. R5-Tecnología (pérdida info, eval 12) y R2/R3-Servicios (KOHA, infraestructura) deberían escalar a ALTO.</div>
+      <div class="alert a-critical"><div class="at">R1 y R5 de Servicios Bibliotecarios son duplicados (eval 12 ambos)</div>Ambos describen el mismo evento: "usuario no devuelve material bibliográfico". Deben fusionarse en un único riesgo con consecuencias acumuladas (reducción acervo + acumulación multas).</div>
+      <div class="alert a-critical"><div class="at">R1, R2 y R3 Financiero son variantes del mismo riesgo (eval 3 los tres)</div>Los tres describen restricción de recursos financieros. Consolidar en un riesgo único estratégico mejora la gestión y elimina redundancias innecesarias.</div>
+      <div class="alert a-warning"><div class="at">O1-Calidad no es oportunidad — es una brecha de competencias</div>"Se requiere más horas de práctica para auditores" describe una necesidad operativa, no una oportunidad de mejora. Debe convertirse en riesgo de capacidad auditora o en acción de mejora.</div>
+      <div class="alert a-warning"><div class="at">R1 Servicios clasificado como Bajo con evaluación 12</div>La metodología (1-9=Bajo, 10-19=Medio) indica que eval=12 corresponde a nivel MEDIO, pero está marcado como Bajo en la matriz. Inconsistencia metodológica a corregir.</div>
+      <div class="alert a-mag"><div class="at">Ausencia total de ciberseguridad, IA y continuidad operativa</div>Cero registros cubren ataques cibernéticos, protección de datos (Ley 1581), inteligencia artificial, accesibilidad digital o planes de continuidad (BCP) — brechas críticas para ISO 9001:2026.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: REFORMULACIÓN -->
+<div id="tab-reforma" class="panel">
+  <div class="section-title">Estado sugerido por registro — acciones de reforma</div>
+  <div class="full-table-wrap">
+    <table class="ftable">
+      <thead><tr><th>#</th><th>Reg.</th><th>Tipo</th><th>Proceso / Subproceso</th><th>Diagnóstico clave</th><th>Reformulación propuesta</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>O1 Planeac. Direc.</td><td class="to">OPP</td><td>Direc. Estratégico</td><td>Redactada como resultado ya obtenido</td><td>Aprovechar acuerdos interinstitucionales para ampliar acceso a recursos bibliográficos compartidos</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>2</td><td>O2 Planeac. Direc.</td><td class="to">OPP</td><td>Direc. Estratégico</td><td>Genérica, difícil de accionar sin objetivo concreto</td><td>Integrar la biblioteca en los procesos de planeación estratégica como actor clave del ecosistema académico</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>3</td><td>R1 Planeac. Direc.</td><td class="tr">RIESGO</td><td>Direc. Estratégico</td><td>Bien identificado. Mejorar redacción y fortalecer tratamiento</td><td>Restricción presupuestaria que comprometa la sostenibilidad operativa y de colecciones de la biblioteca</td><td><span class="pill p-mantener">Mantener</span></td></tr>
+        <tr><td>4</td><td>R2 Planeac. Direc.</td><td class="tr">RIESGO</td><td>Direc. Estratégico</td><td>Riesgo reputacional/estratégico válido. Control = 3 pero sin evidencia clara</td><td>Subvaloración institucional de los procesos de biblioteca que limite su participación en decisiones académicas y presupuestarias</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>5</td><td>O1 Calidad</td><td class="to">OPP</td><td>Gestión Calidad</td><td>No es oportunidad — es brecha de competencias auditoras</td><td>Convertir en: Riesgo de insuficiencia en competencias prácticas de auditores que afecte la eficacia del programa de auditoría</td><td><span class="pill p-accion">Convertir en riesgo</span></td></tr>
+        <tr><td>6</td><td>O2 Calidad</td><td class="to">OPP</td><td>Gestión Calidad</td><td>Bien redactada y accionable. Mantener con mejora</td><td>Desarrollar estrategia de comunicación y acompañamiento que incremente la apropiación del SGC en todos los niveles</td><td><span class="pill p-mantener">Mantener</span></td></tr>
+        <tr><td>7</td><td>R1 Calidad</td><td class="tr">RIESGO</td><td>Gestión Calidad</td><td>Duplicado de R1-2024. Evaluación 1 — casi irrelevante</td><td>FUSIONAR: Incumplimiento en la planificación o ejecución del programa de auditoría interna que afecte la verificación del SGC</td><td><span class="pill p-fusionar">Fusionar R1+R1-24</span></td></tr>
+        <tr><td>8</td><td>R1-2024 Calidad</td><td class="tr">RIESGO</td><td>Gestión Calidad</td><td>Idéntico al R1 anterior — mismo evento</td><td>— Eliminar y fusionar con R1 Calidad</td><td><span class="pill p-eliminar">Eliminar/Fusionar</span></td></tr>
+        <tr><td>9</td><td>R2 Calidad</td><td class="tr">RIESGO</td><td>Gestión Calidad</td><td>Riesgo de mejora continua. Nivel muy bajo para su impacto real</td><td>Demora en implementación de acciones correctivas comprometiendo la mejora continua del SGC. Escalar a Medio</td><td><span class="pill p-escalar">Escalar nivel</span></td></tr>
+        <tr><td>10</td><td>O1 Rec.Inf.</td><td class="to">OPP</td><td>Recursos de Información</td><td>Nivel medio justificado. Redacción en tiempo futuro irreal</td><td>Modernizar infraestructura tecnológica de la biblioteca con equipos alineados a tendencias de bibliotecología digital</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>11</td><td>O2 Rec.Inf.</td><td class="to">OPP</td><td>Recursos de Información</td><td>Acción ya ejecutada ("se diseñó"). Actualizar hacia nueva meta</td><td>Evolucionar la biblioteca digital hacia experiencia de usuario accesible, adaptada a dispositivos y con acceso personalizado</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>12</td><td>O3 Rec.Inf.</td><td class="to">OPP</td><td>Recursos de Información</td><td>Fusionable con O2 por cercanía temática digital</td><td>Fusionar con O2: Transformación de canales de atención y acceso a recursos hacia modelos digitales y asíncronos</td><td><span class="pill p-fusionar">Fusionar con O2</span></td></tr>
+        <tr><td>13</td><td>O4 Rec.Inf.</td><td class="to">OPP</td><td>Recursos de Información</td><td>Válida pero muy operativa. Elevar a enfoque estratégico</td><td>Fortalecer inversión en colecciones físicas y digitales con base en análisis de pertinencia curricular y patrones de uso</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>14</td><td>O5 Rec.Inf.</td><td class="to">OPP</td><td>Recursos de Información</td><td>Demasiado específico — más una acción que una oportunidad</td><td>Convertir en acción de mejora. Si se mantiene: Automatizar trazabilidad de adquisiciones en KOHA para evidenciar inversión</td><td><span class="pill p-accion">Convertir en acción</span></td></tr>
+        <tr><td>15</td><td>R1 Rec.Inf.</td><td class="tr">RIESGO</td><td>Recursos de Información</td><td>Nivel medio bien justificado. Mejorar redacción</td><td>Adquisición de recursos bibliográficos sin criterios de pertinencia curricular generando baja utilización e inversión ineficiente</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>16</td><td>R2 Rec.Inf.</td><td class="tr">RIESGO</td><td>Recursos de Información</td><td>Redundante con R1, R2, R3 Financiero</td><td>Fusionar con riesgos financieros en un único riesgo estratégico de restricción presupuestaria</td><td><span class="pill p-fusionar">Fusionar con Financiero</span></td></tr>
+        <tr><td>17</td><td>R3 Rec.Inf.</td><td class="tr">RIESGO</td><td>Recursos de Información</td><td>Riesgo reputacional/académico importante. Nivel bajo para su impacto</td><td>Pérdida de usuarios activos por desconocimiento de servicios con impacto en permanencia estudiantil. Escalar a Medio</td><td><span class="pill p-escalar">Escalar nivel</span></td></tr>
+        <tr><td>18</td><td>O1 Servicios</td><td class="to">OPP</td><td>Servicios y Espacios</td><td>Alta relevancia académica. Mantener y fortalecer</td><td>Implementar programa de alfabetización informacional y competencias digitales para toda la comunidad académica</td><td><span class="pill p-mantener">Mantener</span></td></tr>
+        <tr><td>19</td><td>O2 Servicios</td><td class="to">OPP</td><td>Servicios y Espacios</td><td>Operativo. Reencuadrar como estrategia de autogestión y experiencia</td><td>Implementar autopréstamo como estrategia de experiencia de usuario que mejore autonomía y tiempos de atención</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>20</td><td>R1 Servicios</td><td class="tr">RIESGO</td><td>Servicios y Espacios</td><td>Duplicado de R5. Clasificado como Bajo con eval=12 (inconsistencia)</td><td>FUSIONAR: Incumplimiento en devolución oportuna de material reduciendo acervo disponible y generando multas acumuladas en KOHA</td><td><span class="pill p-fusionar">Fusionar con R5</span></td></tr>
+        <tr><td>21</td><td>R2 Servicios</td><td class="tr">RIESGO</td><td>Servicios y Espacios</td><td>Nivel medio justificado. Ampliar a continuidad operativa</td><td>Interrupción del servicio bibliotecario por fallas en KOHA o acceso a bases de datos, comprometiendo la continuidad operativa</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>22</td><td>R3 Servicios</td><td class="tr">RIESGO</td><td>Servicios y Espacios</td><td>Operativo válido. Mejorar redacción</td><td>Deterioro de material bibliográfico o equipos tecnológicos por uso inadecuado generando pérdida patrimonial</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>23</td><td>R4 Servicios</td><td class="tr">RIESGO</td><td>Servicios y Espacios</td><td>Infraestructural válido. Ampliar al componente digital</td><td>Insuficiencia de espacios físicos y/o virtuales para atender la demanda limitando el acceso equitativo a los servicios</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>24</td><td>R5 Servicios</td><td class="tr">RIESGO</td><td>Servicios y Espacios</td><td>Duplicado del R1. Fusionar</td><td>— Eliminar y fusionar con R1 Servicios</td><td><span class="pill p-eliminar">Eliminar/Fusionar</span></td></tr>
+        <tr><td>25</td><td>R6 Servicios</td><td class="tr">RIESGO</td><td>Servicios y Espacios</td><td>Talento humano. Mover al proceso de RRHH correspondiente</td><td>Alta rotación del personal de biblioteca por desmotivación o clima laboral afectando continuidad y gestión del conocimiento</td><td><span class="pill p-reformular">Reformular + reubicar</span></td></tr>
+        <tr><td>26</td><td>O1 Difusión</td><td class="to">OPP</td><td>Difusión y Extensión</td><td>Válida y accionable. Ampliar enfoque omnicanal</td><td>Implementar estrategia de comunicación omnicanal que posicione los servicios de biblioteca y aumente indicadores de uso</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>27</td><td>R1 Difusión</td><td class="tr">RIESGO</td><td>Difusión y Extensión</td><td>Operativo. Mantener con mejora de redacción</td><td>Baja participación en actividades de extensión cultural afectando el posicionamiento de biblioteca como actor cultural</td><td><span class="pill p-mantener">Mantener</span></td></tr>
+        <tr><td>28</td><td>R1 RRHH</td><td class="tr">RIESGO</td><td>Talento Humano</td><td>Válido. Sin acción definida. Mejorar redacción</td><td>Vinculación de personal que no cumpla el perfil competencial requerido afectando la calidad del servicio bibliotecario</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>29</td><td>R2 RRHH</td><td class="tr">RIESGO</td><td>Talento Humano</td><td>Fusionable con R3 por cercanía temática</td><td>FUSIONAR: Brecha en competencias tecnológicas y bibliotecológicas del personal limitando la adaptación a nuevas tendencias</td><td><span class="pill p-fusionar">Fusionar R2+R3</span></td></tr>
+        <tr><td>30</td><td>R3 RRHH</td><td class="tr">RIESGO</td><td>Talento Humano</td><td>Similar a R2. Fusionar</td><td>— Eliminar y fusionar con R2 RRHH</td><td><span class="pill p-eliminar">Eliminar/Fusionar</span></td></tr>
+        <tr><td>31</td><td>O1 RRHH</td><td class="to">OPP</td><td>Talento Humano</td><td>Accionable. Ampliar a competencias digitales e IA</td><td>Desarrollar plan de formación continua en tecnología, IA e innovación bibliotecaria fortaleciendo la transformación digital</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>32</td><td>R1 Admin.</td><td class="tr">RIESGO</td><td>Adm. e Infraest.</td><td>Operativo. Fusionable con riesgos financieros</td><td>Fusionar: Restricción o demora en disponibilidad de recursos institucionales para el funcionamiento de biblioteca</td><td><span class="pill p-fusionar">Fusionar con Financiero</span></td></tr>
+        <tr><td>33</td><td>R2 Admin.</td><td class="tr">RIESGO</td><td>Adm. e Infraest.</td><td>Tecnológico. Ampliar a todo el ecosistema ERP</td><td>Fallas en plataforma administrativa (SAP/ERP) que interrumpan procesos de compra, pago o gestión de recursos</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>34</td><td>R3 Admin.</td><td class="tr">RIESGO</td><td>Adm. e Infraest.</td><td>Válido. Escalar valoración — alto impacto en acceso académico</td><td>No renovación oportuna de licencias de recursos electrónicos generando interrupción del acceso académico. Escalar a Medio</td><td><span class="pill p-escalar">Escalar nivel</span></td></tr>
+        <tr><td>35</td><td>R4 Admin.</td><td class="tr">RIESGO</td><td>Adm. e Infraest.</td><td>Ambiental/continuidad. Ampliar a plan BCP</td><td>Siniestro físico (incendio, inundación) generando pérdida del patrimonio documental o interrupción prolongada del servicio</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>36</td><td>O1 Admin.</td><td class="to">OPP</td><td>Adm. e Infraest.</td><td>Cumplimiento normativo. Accionable. Nivel medio bien asignado</td><td>Implementar y actualizar la TRD de procesos de biblioteca alineada con normativa archivística colombiana (Ley 594/2000)</td><td><span class="pill p-mantener">Mantener</span></td></tr>
+        <tr><td>37</td><td>R1 Financiero</td><td class="tr">RIESGO</td><td>Gestión Financiera</td><td>Redundante con R2, R3 Financiero y R2 Rec.Inf. y R1 Admin.</td><td>FUSIONAR todos en: Restricción o insuficiencia de recursos financieros para operación, colecciones y pago de proveedores</td><td><span class="pill p-fusionar">Fusionar R1+R2+R3</span></td></tr>
+        <tr><td>38</td><td>R2 Financiero</td><td class="tr">RIESGO</td><td>Gestión Financiera</td><td>Redundante. Fusionar</td><td>— Eliminar y fusionar en riesgo financiero único</td><td><span class="pill p-eliminar">Eliminar/Fusionar</span></td></tr>
+        <tr><td>39</td><td>R3 Financiero</td><td class="tr">RIESGO</td><td>Gestión Financiera</td><td>Consecuencia del R1/R2, no riesgo independiente</td><td>— Eliminar y fusionar en riesgo financiero único</td><td><span class="pill p-eliminar">Eliminar/Fusionar</span></td></tr>
+        <tr><td>40</td><td>R1 Tecnología</td><td class="tr">RIESGO</td><td>Tecnología</td><td>Solapado con R2-TEC. Sin acción. Fusionar</td><td>FUSIONAR: Insuficiencia o lentitud del soporte tecnológico afectando la continuidad y calidad de los servicios digitales</td><td><span class="pill p-fusionar">Fusionar R1+R2</span></td></tr>
+        <tr><td>41</td><td>R2 Tecnología</td><td class="tr">RIESGO</td><td>Tecnología</td><td>Consecuencia de R1-TEC. Nivel medio. Fusionar</td><td>— Fusionar con R1 Tecnología</td><td><span class="pill p-fusionar">Fusionar con R1</span></td></tr>
+        <tr><td>42</td><td>R3 Tecnología</td><td class="tr">RIESGO</td><td>Tecnología</td><td>Nivel medio justificado. Ampliar a continuidad operativa</td><td>Interrupción de servicios tecnológicos por fallas en infraestructura que afecte el acceso a recursos digitales de biblioteca</td><td><span class="pill p-escalar">Escalar + reformular</span></td></tr>
+        <tr><td>43</td><td>R4 Tecnología</td><td class="tr">RIESGO</td><td>Tecnología</td><td>Válido. Sin acción. Ampliar a obsolescencia sistémica</td><td>Obsolescencia tecnológica progresiva (hardware, software, sistemas) que limite la capacidad de servicios digitales competitivos</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+        <tr><td>44</td><td>R5 Tecnología</td><td class="tr">RIESGO</td><td>Tecnología</td><td>Crítico — eval 12 pero debería ser ALTO. Sin acción robusta</td><td>Pérdida, corrupción o indisponibilidad de información por falla de backups, ataques o error humano. Escalar a ALTO urgente</td><td><span class="pill p-escalar">Escalar a ALTO</span></td></tr>
+        <tr><td>45</td><td>O1 Tecnología</td><td class="to">OPP</td><td>Tecnología</td><td>Muy específico. Ampliar enfoque estratégico</td><td>Fortalecer infraestructura tecnológica (almacenamiento, nube, conectividad) para soportar crecimiento de servicios digitales</td><td><span class="pill p-reformular">Reformular</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 5: EMERGENTES -->
+<div id="tab-emergentes" class="panel">
+  <div class="section-title">12 riesgos y oportunidades emergentes propuestos — brechas no cubiertas</div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-01</div><div class="rec-title">Ciberseguridad — ataques a sistemas bibliotecarios (KOHA, SAP, bases de datos)</div></div><div class="rec-body">Tipo: Tecnológico/Seguridad · Nivel sugerido: ALTO · Proceso: Tecnología<br>Ataques cibernéticos (ransomware, phishing, acceso no autorizado) que comprometan disponibilidad, integridad o confidencialidad de los sistemas bibliotecarios. Tratamiento: Plan de ciberseguridad, MFA, auditorías de seguridad periódicas.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-02</div><div class="rec-title">Protección de datos personales de usuarios (Ley 1581/2012 — GDPR)</div></div><div class="rec-body">Tipo: Cumplimiento normativo · Nivel sugerido: MEDIO-ALTO · Proceso: Gestión de biblioteca<br>Incumplimiento en el tratamiento de datos personales (nombre, correo, historial préstamos) sin políticas claras de privacidad, generando sanciones legales y daño reputacional ante la SIC.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-03</div><div class="rec-title">Impacto de la IA en el uso de recursos bibliográficos y veracidad académica</div></div><div class="rec-body">Tipo: Estratégico/Académico · Nivel sugerido: ALTO · Proceso: Recursos de información<br>Reducción del uso de bases de datos por adopción masiva de IA (ChatGPT, Gemini) entre estudiantes y docentes, con riesgo de desinformación y pérdida del valor percibido de la biblioteca. Requiere estrategia de posicionamiento y alfabetización en IA crítica.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-04</div><div class="rec-title">Dependencia tecnológica de proveedores únicos sin plan de contingencia</div></div><div class="rec-body">Tipo: Continuidad operativa · Nivel sugerido: MEDIO · Proceso: Tecnología<br>Dependencia excesiva de proveedor único (KOHA, EBSCOhost, ProQuest) sin contratos con SLA ni plan de contingencia ante discontinuidades del servicio o cambios de condiciones contractuales.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-05</div><div class="rec-title">Accesibilidad digital e inclusión — incumplimiento WCAG 2.1</div></div><div class="rec-body">Tipo: Cumplimiento/Experiencia de usuario · Nivel sugerido: MEDIO · Proceso: Servicios y espacios<br>Incumplimiento de estándares de accesibilidad web (WCAG 2.1) en la biblioteca virtual, limitando el acceso de usuarios con discapacidad visual, auditiva o cognitiva.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-06</div><div class="rec-title">Falta de interoperabilidad entre KOHA, SAP, LMS y repositorio institucional</div></div><div class="rec-body">Tipo: Tecnológico · Nivel sugerido: MEDIO · Proceso: Tecnología<br>Silos de información por falta de integración entre sistemas (KOHA, SAP, Moodle/Brightspace, repositorio) generando duplicidad de esfuerzos, datos inconsistentes y pérdida de oportunidades analíticas.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-07</div><div class="rec-title">Ausencia de plan de continuidad operativa — BCP para biblioteca</div></div><div class="rec-body">Tipo: Continuidad operativa · Nivel sugerido: ALTO · Proceso: Planeación institucional<br>Inexistencia de plan de continuidad del negocio (BCP) para mantener servicios mínimos ante eventos críticos (pandemia, falla eléctrica extendida, desastres, ciberataque). Proyectado en ISO 9001:2026.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NR-08</div><div class="rec-title">Brecha en competencias digitales avanzadas del personal (IA, datos, analítica)</div></div><div class="rec-body">Tipo: Talento humano · Nivel sugerido: MEDIO · Proceso: Talento humano<br>Insuficiencia de competencias en tecnologías emergentes (IA, gestión de datos, curación digital, métricas de uso) que limita la capacidad de innovación y adaptación del equipo a la transformación digital.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NO-01</div><div class="rec-title">OPP: IA para servicios de referencia, recomendación y búsqueda inteligente</div></div><div class="rec-body">Tipo: Innovación · Proceso: Servicios y espacios<br>Implementar asistentes virtuales y motores de recomendación con IA para orientar usuarios en búsqueda de información, recomendación personalizada de recursos y alfabetización informacional adaptativa. Impacto: ALTO en experiencia de usuario.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NO-02</div><div class="rec-title">OPP: Métricas de uso e impacto bibliométrico como inteligencia institucional</div></div><div class="rec-body">Tipo: Innovación académica · Proceso: Difusión y extensión<br>Desarrollar dashboards de métricas de uso, impacto de colecciones y bibliometría institucional que posicionen la biblioteca como fuente de inteligencia para la toma de decisiones académicas y acreditación.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NO-03</div><div class="rec-title">OPP: Biblioteca verde — sostenibilidad ambiental alineada con ODS</div></div><div class="rec-body">Tipo: Ambiental/Sostenibilidad · Proceso: Planeación institucional<br>Implementar iniciativas de sostenibilidad (reducción de papel, eficiencia energética, colecciones acceso abierto, préstamo digital prioritario) alineadas con los ODS y la política ambiental de Areandina. Proyectado en ISO 9001:2026.</div></div>
+  <div class="rec-box"><div class="rec-hdr"><div class="rec-num">NO-04</div><div class="rec-title">OPP: Repositorio institucional y acceso abierto para visibilidad investigativa</div></div><div class="rec-body">Tipo: Gestión del conocimiento · Proceso: Recursos de información<br>Fortalecer el repositorio institucional de producción académica en acceso abierto mejorando visibilidad de la investigación Areandina y aportando a indicadores de acreditación y rankings universitarios.</div></div>
+</div>
+
+<!-- TAB 6: RECOMENDACIONES -->
+<div id="tab-recomendaciones" class="panel">
+  <div class="section-title">Recomendaciones estratégicas — madurez y hoja de ruta</div>
+  <div class="two-col">
+    <div class="card">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Nivel de madurez actual: 2 / 5</div>
+      <div class="madurez-scale">
+        <div class="ms a1"></div><div class="ms a2"></div><div class="ms"></div><div class="ms"></div><div class="ms"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-secondary);margin-top:3px;margin-bottom:12px;">
+        <span>Inicial</span><span>Definido ←</span><span>Gestionado</span><span>Medido</span><span>Optimizado</span>
+      </div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-01</div><div class="rec-title">Consolidar matriz: de 45 a ~30 registros de calidad</div></div><div class="rec-body">Fusionar 10 registros duplicados/redundantes identificados. Una matriz depurada con 28-32 registros bien formulados genera más valor gerencial que 45 con múltiples redundancias y vacíos de tratamiento.</div></div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-02</div><div class="rec-title">Corregir inconsistencia metodológica: R1 Servicios</div></div><div class="rec-body">R1 Servicios tiene evaluación 12 (nivel MEDIO según la metodología) pero está clasificado como Bajo. Corregir en la próxima actualización. Verificar todos los registros contra la tabla de criterios.</div></div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-03</div><div class="rec-title">Definir acciones para los 13 registros sin tratamiento</div></div><div class="rec-body">R1/R2/R3 Financiero, R1/R2/R3 RRHH, R4/R5 Tecnología y O1 Tecnología no tienen acción definida — incumplimiento directo del requisito 6.1.2 de ISO 9001:2015. Priorizar en próxima sesión de revisión.</div></div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-04</div><div class="rec-title">Reformular redacción — eliminar modo condicional débil</div></div><div class="rec-body">Cambiar de "podría presentarse que..." a formato directo: "[Evento] que afecte/comprometa [consecuencia]". El 85% de los registros (38/45) usan redacción condicional que debilita la gestión.</div></div>
+    </div>
+    <div class="card">
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-05</div><div class="rec-title">Incorporar ciberseguridad como eje transversal urgente</div></div><div class="rec-body">Crear mínimo 3 riesgos de ciberseguridad (NR-01, NR-02, NR-07) con controles concretos alineados con Ley 1581/2012. La biblioteca maneja datos personales de miles de usuarios — brecha no negociable.</div></div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-06</div><div class="rec-title">Escalar R5-Tecnología a nivel ALTO de forma inmediata</div></div><div class="rec-body">La pérdida de información institucional con evaluación 12 y sin acción robusta es el riesgo más subestimado de la matriz. Requiere escalación inmediata, plan de backup verificado y protocolo de recuperación ante desastres.</div></div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-07</div><div class="rec-title">Crear plan de continuidad operativa (BCP) para biblioteca</div></div><div class="rec-body">Documentar procedimientos de activación para interrupción de servicios tecnológicos, físicos o de personal. Incluir servicios mínimos garantizados en modo contingencia y tiempos de recuperación (RTO/RPO) para KOHA y bases de datos.</div></div>
+      <div class="rec-box"><div class="rec-hdr"><div class="rec-num">R-08</div><div class="rec-title">Hoja de ruta hacia madurez nivel 3-4</div></div><div class="rec-body">
+        Corto plazo (0-6 meses): Depurar, fusionar y completar acciones de la matriz actual. Corregir inconsistencia R1 Servicios.<br>
+        Mediano plazo (6-12 meses): Incorporar riesgos emergentes NR-01 al NR-08. Tablero de seguimiento trimestral. BCP básico.<br>
+        Largo plazo (12-24 meses): Métricas de efectividad, análisis residual, alineación ISO 9001:2026. Repositorio y IA.
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">Datos validados registro a registro desde el archivo Excel original · 30 riesgos + 15 oportunidades = 45 registros · Fundación Universitaria del Área Andina · ISO 9001:2015</div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
